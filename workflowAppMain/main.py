@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -209,6 +210,18 @@ def clone_repo(repo_url: str, destination: Path) -> Path:
     return destination
 
 
+def _graphviz_executable() -> str:
+    """Return the Graphviz executable or raise an actionable error."""
+    executable = shutil.which("dot")
+    if executable is None:
+        raise RuntimeError(
+            "Graphviz is required to generate workflow images. "
+            "Install it with `sudo apt-get update && sudo apt-get install -y graphviz` "
+            "and ensure its `bin` directory is on PATH."
+        )
+    return executable
+
+
 def generate_flowchart(
     source_paths: list[str] | str,
     hide_legend: bool = False,
@@ -221,6 +234,7 @@ def generate_flowchart(
     dot_output = temp_dir / "workflow.gv"
     png_output = temp_dir / "workflow.png"
     svg_output = temp_dir / "workflow.svg"
+    dot_executable = _graphviz_executable()
 
     code2flow(
         raw_source_paths=source_paths,
@@ -232,11 +246,11 @@ def generate_flowchart(
     )
 
     # Render PNG
-    subprocess.run(["dot", "-Tpng", str(dot_output), "-o", str(png_output)], check=True)
+    subprocess.run([dot_executable, "-Tpng", str(dot_output), "-o", str(png_output)], check=True)
 
     # Render SVG
     try:
-        subprocess.run(["dot", "-Tsvg", str(dot_output), "-o", str(svg_output)], check=True)
+        subprocess.run([dot_executable, "-Tsvg", str(dot_output), "-o", str(svg_output)], check=True)
     except Exception:
         svg_output = None
 
