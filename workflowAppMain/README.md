@@ -31,6 +31,14 @@ pip3 install code2flow
 
 If you don't have it already, you will also need to install graphviz. Installation instructions can be found [here](https://graphviz.org/download/).
 
+On Debian or Ubuntu, install the system package that provides the `dot` executable with:
+
+```bash
+sudo apt-get update && sudo apt-get install -y graphviz
+```
+
+The Python development requirements also include the `graphviz` package, but it does not provide the `dot` executable by itself.
+
 Additionally, depending on the language you want to parse, you may need to install additional dependencies:
 - JavaScript: [Acorn](https://www.npmjs.com/package/acorn)
 - Ruby: [Parser](https://github.com/whitequark/parser)
